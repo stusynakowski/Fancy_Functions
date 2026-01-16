@@ -71,3 +71,4 @@ class FancyCell(BaseModel):
             storage_kind=StorageKind.COMPOSITE,
             value=children
         )
+

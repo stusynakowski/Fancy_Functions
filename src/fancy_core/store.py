@@ -23,10 +23,20 @@ class DatumStore(ABC):
 
     @abstractmethod
     def put(self, value: Any, alias: str) -> FancyCell:
-        """
-        Take a python object, store it (if heavy), and return a new FancyCell.
-        """
-        pass
+        # Use simple object id or uuid for URI
+        from uuid import uuid4
+        obj_uuid = uuid4()
+        uri = f"memory://{obj_uuid}"
+        
+        # Store it
+        self._data[uri] = value
+        
+        # Return reference cell
+        return FancyCell.create_reference(
+            uri=uri,
+            alias=alias,
+            type_hint=type(value).__name__
+        )
 
 class InMemoryStore(DatumStore):
     """

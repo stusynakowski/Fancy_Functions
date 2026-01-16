@@ -7,8 +7,8 @@ This plan covers the implementation of the atomic data unit (`FancyCell`) and th
 **File:** `src/fancy_core/cells.py`
 
 ### 1.1 Data Model
-- [ ] Define `StorageKind` Enum: `VALUE`, `REFERENCE`, `COMPOSITE`.
-- [ ] Define `FancyCell` Pydantic Model:
+- [x] Define `StorageKind` Enum: `VALUE`, `REFERENCE`, `COMPOSITE`.
+- [x] Define `FancyCell` Pydantic Model:
     - `id`: UUID (default factory)
     - `alias`: str
     - `type_hint`: str (default "Any")
@@ -18,29 +18,29 @@ This plan covers the implementation of the atomic data unit (`FancyCell`) and th
     - `reference_meta`: Dict (metadata for REFERENCE)
 
 ### 1.2 Factory Methods
-- [ ] `create_value(value, alias, type_hint)` -> Kind: VALUE
-- [ ] `create_reference(uri, alias, type_hint, meta)` -> Kind: REFERENCE
-- [ ] `create_composite(children, alias)` -> Kind: COMPOSITE
+- [x] `create_value(value, alias, type_hint)` -> Kind: VALUE
+- [x] `create_reference(uri, alias, type_hint, meta)` -> Kind: REFERENCE
+- [x] `create_composite(children, alias)` -> Kind: COMPOSITE
 
 ## 2. Abstraction: `DatumStore` (The Physics)
 **File:** `src/fancy_core/store.py`
 
 ### 2.1 Interface
-- [ ] Abstract Base Class `DatumStore`.
-- [ ] Method `resolve(cell: FancyCell) -> Any`:
+- [x] Abstract Base Class `DatumStore`.
+- [x] Method `resolve(cell: FancyCell) -> Any`:
     - Logic to return `value` if direct.
     - Logic to load from `reference_uri` if reference.
     - Logic to resolve/unpack if composite.
-- [ ] Method `put(value: Any, alias: str) -> FancyCell`:
+- [x] Method `put(value: Any, alias: str) -> FancyCell`:
     - Logic to persist object and return a new Cell.
 
 ### 2.2 Implementation: `InMemoryStore`
-- [ ] Internal Dict `_data` to map URI -> Object.
-- [ ] Implement `put` generating `memory://{uuid}` URIs.
-- [ ] Implement `resolve` fetching from dict.
+- [x] Internal Dict `_data` to map URI -> Object.
+- [x] Implement `put` generating `memory://{uuid}` URIs.
+- [x] Implement `resolve` fetching from dict.
 
 ## 3. Testing
 **File:** `tests/test_cells.py`
-- [ ] Test cell creation (all 3 modes).
-- [ ] Test `InMemoryStore` round-trip (put then resolve).
-- [ ] Test error handling for missing references.
+- [x] Test cell creation (all 3 modes).
+- [x] Test `InMemoryStore` round-trip (put then resolve).
+- [x] Test error handling for missing references.
