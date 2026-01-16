@@ -15,3 +15,7 @@ class WorkflowStep(BaseModel):
     # Data Mapping (Wiring -> passed as Cell IDs)
     # Maps Function Argument Name -> Input Cell ID
     inputs: Dict[str, UUID] = {}
+
+    # Output Mapping (Wiring -> produced Cell IDs)
+    # Maps Output Name (e.g. "return") -> Output Cell ID
+    outputs: Dict[str, UUID] = {}

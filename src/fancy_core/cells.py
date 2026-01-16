@@ -7,6 +7,7 @@ class StorageKind(str, Enum):
     VALUE = "VALUE"
     REFERENCE = "REFERENCE"
     COMPOSITE = "COMPOSITE"
+    PENDING = "PENDING"
 
 class FancyCell(BaseModel):
     """

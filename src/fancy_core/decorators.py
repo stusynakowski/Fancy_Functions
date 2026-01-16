@@ -75,19 +75,20 @@ def step(func: Callable):
             else:
                 step_config[name] = value
                 
-        # Create the Step definition
-        new_step = WorkflowStep(
-            function_slug=slug,
-            config=step_config,
-            inputs=step_inputs
-        )
-        
         # Create Output Placeholder(s)
         output_cell = FancyCell(
             alias=f"{slug}_out",
             type_hint=output_contract.get("return", "Any"),
-            storage_kind=StorageKind.VALUE, # Temporary
+            storage_kind=StorageKind.PENDING,
             value=None
+        )
+
+        # Create the Step definition
+        new_step = WorkflowStep(
+            function_slug=slug,
+            config=step_config,
+            inputs=step_inputs,
+            outputs={"return": output_cell.id}
         )
         
         return StepWiring(step=new_step, outputs=output_cell)

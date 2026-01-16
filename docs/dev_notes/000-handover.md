@@ -1,29 +1,41 @@
 # Developer Handover Guide
 
 ## Purpose
-This document provides a quickstart for developers picking up the implementation of the `fancy_core` library based on the specs in `docs_new/spec/`.
+This document provides a current snapshot of the `fancy_core` library verification and development status.
 
-## Immediate Next Steps (Implementation Plan)
+## Current Status (As of Jan 15, 2026)
 
-### Phase 1: Skeleton Setup
-1.  Initialize the Python package structure in `src/`.
-2.  Install `pydantic`.
-3.  Create the `Registry` singleton to hold step definitions.
+We have successfully implemented the core architecture for **Milestone 1, 2, and 3**. The fundamental building blocks are in place.
 
-### Phase 2: Core Logic
-1.  Implement the `@step` decorator.
-    *   It should wrap the function and register it in the `Registry`.
-    *   It should extract input arguments to build a schema.
-2.  Implement `Workflow` and `Step` classes using Pydantic models.
-    *   Ensure fields match the Frontend specs (see `docs_from_front_end/spec/002-data-model.md`).
+### Completed Components
+1.  **Cells & Store (`src/fancy_core/cells.py`, `src/fancy_core/store.py`)**
+    -   `FancyCell` for data wrapping.
+    -   `DatumStore` (and `InMemoryStore`) for state management.
+2.  **Function Registry (`src/fancy_core/registry.py`, `src/fancy_core/functions.py`)**
+    -   `FancyFunction` metadata wrapper.
+    -   Global `registry` for looking up executables by slug.
+3.  **Step Definition (`src/fancy_core/workflow_step.py`)**
+    -   `WorkflowStep` model for wiring inputs/outputs.
+4.  **Workflow & Engine (`src/fancy_core/workflow.py`, `src/fancy_core/engine.py`)**
+    -   `Workflow` container.
+    -   `Engine` for executing the graph, resolving inputs, and capturing outputs.
 
-### Phase 3: Execution Engine
-1.  Create `RuntimeContext` class (simple dict wrapper initially).
-2.  Create `Engine` class with a loop to iterate steps.
-3.  Implement Reference passing.
-    *   *Decision:* For V1, passing data via a generic `data` key in context is sufficient.
+### Recent Implementation
+-   **Workflows (Step 004):** Implemented the `Engine` loop and integration tests in `tests/test_engine.py`.
 
-## Testing Strategy
-- **Unit Tests:** Test the `@step` decorator effectively registers functions.
-- **Integration Tests:** Define a workflow with 3 mock steps and ensure data is passed through.
-- **Serialization Tests:** Load the JSON examples from `docs_from_front_end` and ensure they parse into valid Python objects. 
+## Immediate Next Steps
+
+### 1. Verification & Hardening
+-   Run the integration tests: `python -m pytest tests/test_engine.py`.
+-   Verify that complex wiring (N-to-M outputs) works as expected in the Engine.
+
+### 2. Decorator "Magic" (Milestone 2 Refinement)
+-   The `@step` decorator exists but needs to fully support the "Wiring Factory" pattern (calling the function returns a `WorkflowStep` with inputs wired up, rather than executing the function immediately) if that is the intended design for the DSL. *Check `src/fancy_core/decorators.py` status.*
+
+### 3. Serialization
+-   Ensure full JSON round-tripping for the `Workflow` object for UI compatibility.
+
+## Reference Documents
+-   **Architecture:** `docs/spec/005-architecture.md`
+-   **Detailed Implementation Plans:** See `docs/dev_plan/` folder.
+-   **Status Updates:** See `docs/status_update/` for specific component implementation logs. 
