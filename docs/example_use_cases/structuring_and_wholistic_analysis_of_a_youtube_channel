@@ -1,0 +1,30 @@
+
+
+# usecase problem.
+# i have a problem where I have a youtube chanel containing videos o
+# of people responding to questions giving their perspective.
+# from these youtube videos. i want to design a workflow to structure and and explore what people are saying based on their responses, and the meta data I can extreact. the channel remains the same but the number of videos might change. 
+
+# step one for me would be to create a function to extract all of the videos currently in the youtube video
+# the input cell would be url to the youtube video, the function is some python progream that extract all of the youtube videos, wrapped in the fance function dectorator and the ouput would be a list of cells, that contain all of the youtube videos. I would like to visualize this as a column of cells in my UI. like I would in any function in a spread sheet. I may want to run the process to check on the number of videos.
+# and add to the number of cells.
+
+
+# step two might be a process that extracts meta data corresponding to each video. this might be a function that produces a json string containing all meta data about the title, description time data etc. this would produce a set of sells this would produce a another column of cells. of the same size as step 2
+
+# step 3 might be a function that transcribes the youtube video. to produce a string or json representation
+
+
+# step 4 might be to parse each transcription into conversations using a large language model into
+
+
+# step 5 might be to create a new list of json representations collecting, transcript for each person, and video meta data creating different size of cells. (similar to pivoting)
+
+# step 6 might be to parse out out the transcripts to create a new list of fields for each transcript corresponding to categorical or numerical analysis assessing the response or sentiment or person. and video. this would result in the number of cells corresponding to the number of transcripts.
+
+# step 7: might be to apply iterative analysis to each transcript as a whole.
+
+# step 8: might perform aggregate analysis transcripts and meta data. gather stats produce plots. wholistic analysis etc. mapping all of the cells to a new cell corresponding to a particlar set of analysis.
+
+
+

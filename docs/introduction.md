@@ -5,6 +5,10 @@
 
 We are building a system designed to abstract data processing in a way that matters to users, minimizing the technical friction associated with operating on data. Users should focus on *what* the data represents and *what* they want to achieve, rather than *how* the bytes are moved, stored, or computed.
 
+
+# better motivation... how can we
+
+
 ## Core Concepts
 
 ### 1. Fancy Cells (The "What")
