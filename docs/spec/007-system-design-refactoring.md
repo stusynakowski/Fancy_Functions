@@ -25,6 +25,7 @@ The `DatumStore` must be improved to handle retrieval of these complex structure
     - If `recursive=True` (for user output or specific function needs): Recursively resolves the values of children.
       - *Example*: Resolving a Composite of Integers returns `[1, 2, 3]` instead of `[uuid1, uuid2, uuid3]`.
 
+
 ## 3. Execution Engine: Broadcasting Logic
 
 The Engine is responsible for matching the **Input Shape** (Scalar vs. Composite) to the **Function Signature** (Scalar vs. Collection).
@@ -65,3 +66,8 @@ Functions can now produce multiple values.
 ### 4.2 Step Chaining
 - `step2 = process(step1)`
 - If `step1` outputs a Composite and `process` is a Scalar function, the system automatically infers a Broadcast operation.
+
+## 5. Workflow Construction & Review (DX)
+
+For details on **Representation & Inspection**, **Workflow Accessors**, **Step Introspection**, **Simplified Construction Syntax**, and **Data Flow Visualization**, please refer to [010-data-printing-representation.md](./010-data-printing-representation.md). This content has been moved to keep specifications focused.
+
