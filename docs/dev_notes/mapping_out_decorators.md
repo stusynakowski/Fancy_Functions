@@ -90,3 +90,64 @@ def as_generator(func):
         return list(result)
     return wrapper
 ```
+
+### 5. The Relational Filter (N → M)
+*Selects a subset of inputs based on a condition.*
+
+```python
+def as_relational(func):
+    """
+    Acts as a filter. The decorated function should return a Boolean.
+    Input: List of N items.
+    Result: List of M items (where M <= N) for which func(item) is True.
+    """
+    def wrapper(inputs, *args, **kwargs):
+        return [x for x in inputs if func(x, *args, **kwargs)]
+    return wrapper
+```
+
+### 6. The Aggregate (NxM → 1)
+*Summarizes a 2D Matrix into a single value.*
+
+```python
+def as_aggregate(func):
+    """
+    Flattens a matrix to a single list before applying a reduction logic.
+    """
+    def wrapper(matrix, *args, **kwargs):
+        # Flatten: [[1,2], [3,4]] -> [1,2,3,4]
+        flat_list = [cell for row in matrix for cell in row]
+        return func(flat_list, *args, **kwargs)
+    return wrapper
+```
+
+### 7. The Pivot (NxM → KxL)
+*Reshapes or Summarizes a table into a new table.*
+
+```python
+def as_pivot(func):
+    """
+    Takes a 2D matrix, applies logic, expects a 2D matrix back.
+    Mostly a pass-through identity wrapper for semantic clarity.
+    """
+    def wrapper(matrix, *args, **kwargs):
+        result = func(matrix, *args, **kwargs)
+        # Optional validation: Ensure result is List[List]
+        return result
+    return wrapper
+```
+
+## Summary of Intuitive Decorator Names
+
+To make this "Idiot Proof" and readable, we should alias these technical implementations to friendly names:
+
+| Pattern | Technical Name | Friendly Decorator | Logic It Expects |
+| :--- | :--- | :--- | :--- |
+| **1 → 1** | Scalar | `@apply` | `f(x) -> y` (Simple Math) |
+| **N → 1** | Reduction | `@reduce` | `f(list) -> y` (Sum, Avg) |
+| **1 → N** | Generator | `@expand` | `f(x) -> list` (Split, Range) |
+| **N → N** | Map | `@vectorize` | `f(x) -> y` (applied to all) |
+| **N → M** | Relational | `@filter` | `f(x) -> bool` (Keep checks) |
+| **NxM → NxM** | Table Map | `@grid_apply` | `f(x) -> y` (applied to all cells) |
+| **NxM → 1** | Aggregate | `@summarize` | `f(list) -> y` (Total) |
+| **NxM → KxL** | Pivot | `@reshape` | `f(matrix) -> matrix` |

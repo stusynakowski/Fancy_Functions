@@ -20,7 +20,10 @@ wf = Workflow("Simple Math")
 # 3. Add Step with Direct Value
 # The system automatically wraps the integer '10' into an Input Cell.
 # It registers 'add_five' as a FancyFunction.
+
+
 step = wf.add_step(add_five, 10)
+
 
 
 
@@ -148,4 +151,89 @@ Functions can now produce multiple values.
 ## 5. Workflow Construction & Review (DX)
 
 For details on **Representation & Inspection**, **Workflow Accessors**, **Step Introspection**, and **Data Flow Visualization**, please refer to [010-data-printing-representation.md](./010-data-printing-representation.md). This content has been moved to keep specifications focused.
+
+# Workflow Construction Patterns
+
+There are three primary mental models for constructing a Workflow. We need to decide which level of abstraction best serves the user.
+
+## Option 1: The "Pipeline" Builder (Explicit)
+**Intuition**: You are manually assembling an instruction list.
+
+In this model, the `Workflow` object is the active builder. You don't call functions directly; you tell the workflow to add them.
+
+```python
+# 1. Create the container
+wf = Workflow("My Analysis")
+
+# 2. Add steps explicitly
+# Returns a reference (StepID or Cell) that allows chaining
+step1_out = wf.add(fetch_channel_videos, url="http://...")
+step2_out = wf.add(extract_metadata, videos=step1_out)
+step3_out = wf.add(generate_report, data=step2_out)
+
+# 3. Execution
+wf.run()
+```
+*   **Pros**: 
+    *   No ambiguity. It is obvious step1 belongs to `wf`. 
+    *   No global state or context managers.
+*   **Cons**: 
+    *   Verbose. 
+    *   Cannot just copy-paste standard Python code; must rewrite it into `wf.add()` syntax.
+
+
+## Option 2: The "Functional" Graph (Implicit/Lazy)
+**Intuition**: You are drawing a schematic diagram. Wiring nodes together.
+
+In this model, calling a function doesn't run it *or* add it to a specific workflow immediately. It returns a "Node" or "Lazy Promise". The Workflow is created by looking at the final result and tracing back the history.
+
+```python
+# 1. Define the graph connections purely as objects
+# fetch_channel_videos is decorated to return a "Node" not a value
+start_node = Cell("http://...")
+video_node = fetch_channel_videos(start_node) 
+meta_node  = extract_metadata(video_node)
+report_node = generate_report(meta_node)
+
+# 2. Instantiate the workflow from the output
+# The workflow crawls backwards: report -> meta -> video -> start
+wf = Workflow("My Analysis", outputs=[report_node])
+
+# 3. Execution
+wf.run()
+```
+*   **Pros**: 
+    *   Familiar to users of TensorFlow, PyTorch, or Airflow.
+    *   Logic is declarative.
+*   **Cons**: 
+    *   Users must manually manage the "Graph" object (the variables `video_node`, `meta_node`).
+    *   Debugging can be hard if the graph is disconnected.
+
+
+## Option 3: The "Recorder" (Context Aware)
+**Intuition**: A "Macro Recorder". You function as normal, but a silent observer records your actions.
+
+This is the "Ideal Syntax" proposal. The `Workflow` acts as a context manager (`with wf:`) or global state that intercepts calls.
+
+```python
+# 1. Instantiate the recorder
+wf = Workflow("My Analysis")
+
+# 2. Start recording context
+with wf:
+    # 3. Write standard Python (The @fancy decorator notices the active workflow)
+    videos = fetch_channel_videos(url="http://...")
+    meta = extract_metadata(videos)
+    # The 'videos' variable is actually a Proxy/Cell, allowing it to be passed to 'meta'
+
+# 4. Execution
+# The recording is finished. 'wf.steps' is populated.
+wf.run()
+```
+*   **Pros**: 
+    *   "It just looks like Python." 
+    *   Zero boilerplate inside the logical block.
+*   **Cons**: 
+    *   "Magic." Users might not understand *why* `fetch_channel_videos` didn't actually fetch videos yet.
+    *   Requires strict use of decorators on everything.
 

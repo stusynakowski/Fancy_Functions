@@ -4,11 +4,20 @@
 
 ## 1. Definition
 
-The **Fancy Cell** is the fundamental atomic unit of data within the Fancy Functions ecosystem. It acts as the universal container for all information flowing through a workflow.
+The **Fancy Cell** is the fundamental atomic unit of data within the Fancy Functions ecosystem. It acts as the universal container for information flowing through a workflow. a cell is meant as a unit of data for some processes.
+
+
+
+
+
+
+
+
+
 
 ## 1. Definition## 1. Definition
 
-- **Universal Wrapper:** Whether it is a single integer, a user profile JSON, a 10TB CSV file, or a CAD drawing, it is wrapped in a `FancyCell`.
+- **Universal Wrapper:** Whether it is a single integer, a user profile JSON,a dataframe a 10TB CSV file, or a CAD drawing, it is wrapped in a `FancyCell`.
 
 - **Identity:** Every piece of data has a unique identity and a lifecycle.The **Fancy Cell** is the fundamental atomic unit of data within the Fancy Functions ecosystem. It acts as the universal container for all information flowing through a workflow.The **Fancy Cell** is the fundamental atomic unit of data within the Fancy Functions ecosystem. It acts as the universal container for all information flowing through a workflow.
 
@@ -17,6 +26,7 @@ The **Fancy Cell** is the fundamental atomic unit of data within the Fancy Funct
 
 
 ## 2. Core Attributes
+
 
 Every Fancy Cell must possess the following properties:- **Universal Wrapper:** Whether it is a single integer, a user profile JSON, a 10TB CSV file, or a CAD drawing, it is wrapped in a `FancyCell`.- **Universal Wrapper:** Whether it is a single integer, a user profile JSON, a 10GB CSV file, or a CAD drawing, it is wrapped in a `FancyCell`.
 

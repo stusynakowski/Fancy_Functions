@@ -1,7 +1,23 @@
 # Specification: Core Library Overview
 
 ## Scope
-The Core Library is a pure Python package designed to define, serialize, and execute linear data processing workflows. It serves as the execution engine that mimics the behavior described in the frontend specifications of Simple Steps.
+The Core Library is a pure Python package designed to 
+enable easy orchestration and execution of sophisticated python functions on complicated objectives but in a way that is similar to any dataprocessing scheme found in spredsheet software.
+
+like in spreadssheet software, data is contained in cells, new functions are applied as a functions 
+in this case we weill define cells that can perform other operations that map fil
+
+
+within this library a user defines a set of functions.
+ 
+
+
+in this work users
+
+
+Additionally:
+define, serialize, and execute data processing workflows. It serves as the execution engine that mimics the behavior described in the frontend specifications of Simple Steps.
+
 
 **In Scope:**
 - **Step Abstraction:** Wrapping Python functions into serializable logical units ("Steps").
