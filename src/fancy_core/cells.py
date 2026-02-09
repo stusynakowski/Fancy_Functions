@@ -73,3 +73,26 @@ class FancyCell(BaseModel):
             value=children
         )
 
+    def __str__(self) -> str:
+        """
+        Rich string representation for inspection.
+        Format: [Kind:VALUE] "Alias" <Type:int> = 42
+        """
+        if self.storage_kind == StorageKind.VALUE:
+            val_str = str(self.value)
+            if len(val_str) > 50:
+                val_str = val_str[:47] + "..."
+            content = f"= {val_str}"
+        elif self.storage_kind == StorageKind.REFERENCE:
+            content = f"@ {self.reference_uri}"
+        elif self.storage_kind == StorageKind.COMPOSITE:
+            count = len(self.value) if isinstance(self.value, list) else len(self.value)
+            content = f"[List of {count} items]"
+        else:
+            content = "(Pending)"
+            
+        return f"[{self.storage_kind.value}] \"{self.alias}\" <{self.type_hint}> {content}"
+    
+    def __repr__(self):
+        return self.__str__()
+
