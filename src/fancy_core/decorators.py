@@ -44,10 +44,14 @@ def step(func: Callable):
         name=slug,
         description=func.__doc__ or "",
         input_contract=input_contract,
-        output_contract=output_contract
+        output_contract=output_contract,
+        operation_type="Scalar" # Default
     )
     ff.set_executable(func)
     registry.register(ff)
+    
+    # Tag the function so outer decorators can find the metadata
+    func.fancy_function_slug = slug
     
     @wraps(func)
     def factory(*args, **kwargs) -> StepWiring:
@@ -94,3 +98,138 @@ def step(func: Callable):
         return StepWiring(step=new_step, outputs=output_cell)
 
     return factory
+
+# ==========================================
+# Functional Decorators (Data Geometry)
+# ==========================================
+
+def apply(func: Callable) -> Callable:
+    """
+    Scalar (1 -> 1)
+    Identity decorator for scalar functions.
+    Example: =A1+1
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+def vector_reduce(func: Callable) -> Callable:
+    """
+    Reduction (N -> 1)
+    Ensures input is strictly iterable for reduction logic.
+    (Aliased as @reduce for friendly usage, but named vector_reduce to avoid conflicts)
+    Example: =SUM(A:A)
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Reduction"
+
+    @wraps(func)
+    def wrapper(data, *args, **kwargs):
+        if not isinstance(data, (list, tuple)):
+            data = [data]
+        return func(data, *args, **kwargs)
+    return wrapper
+# Alias
+reduce = vector_reduce
+
+def expand(func: Callable) -> Callable:
+    """
+    Generator (1 -> N)
+    Wraps logic to ensure the output is always a materialized list.
+    Example: =SEQUENCE(10)
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Generator"
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return list(result)
+    return wrapper
+
+def vectorize(func: Callable) -> Callable:
+    """
+    Map (N -> N)
+    Transforms a 1->1 scalar function into an N->N map.
+    Example: =A:A*2
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Map"
+
+    @wraps(func)
+    def wrapper(data, *args, **kwargs):
+        if isinstance(data, list):
+            return [func(x, *args, **kwargs) for x in data]
+        # Fallback for scalar input
+        return func(data, *args, **kwargs)
+    return wrapper
+
+def vector_filter(func: Callable) -> Callable:
+    """
+    Relational (N -> M)
+    Acts as a filter. The decorated function should return a Boolean.
+    Input: List of N items.
+    Result: List of M items (where M <= N) for which func(item) is True.
+    Example: =FILTER(A:A,A:A>0)
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Relational"
+
+    @wraps(func)
+    def wrapper(inputs, *args, **kwargs):
+        # Assumes inputs is iterable
+        return [x for x in inputs if func(x, *args, **kwargs)]
+    return wrapper
+# Alias
+filter = vector_filter
+
+def grid_apply(func: Callable) -> Callable:
+    """
+    Table Map (NxM -> NxM)
+    Applies a scalar function to every cell in a 2D matrix (list of lists).
+    Example: =A:C*2
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "TableMap"
+
+    @wraps(func)
+    def wrapper(matrix, *args, **kwargs):
+        # Assumes matrix is List[List[Any]]
+        return [
+            [func(cell, *args, **kwargs) for cell in row]
+            for row in matrix
+        ]
+    return wrapper
+
+def summarize(func: Callable) -> Callable:
+    """
+    Aggregate (NxM -> 1)
+    Flattens a matrix to a single list before applying a reduction logic.
+    Example: =SUM(A:C)
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Aggregate"
+
+    @wraps(func)
+    def wrapper(matrix, *args, **kwargs):
+        # Flatten: [[1,2], [3,4]] -> [1,2,3,4]
+        flat_list = [cell for row in matrix for cell in row]
+        return func(flat_list, *args, **kwargs)
+    return wrapper
+
+def reshape(func: Callable) -> Callable:
+    """
+    Pivot (NxM -> KxL)
+    Takes a 2D matrix, applies logic, expects a 2D matrix back.
+    Example: =PIVOT(...)
+    """
+    if hasattr(func, "fancy_function_slug"):
+        registry.get(func.fancy_function_slug).operation_type = "Pivot"
+
+    @wraps(func)
+    def wrapper(matrix, *args, **kwargs):
+        result = func(matrix, *args, **kwargs)
+        # Optional validation: Ensure result is List[List]
+        return result
+    return wrapper

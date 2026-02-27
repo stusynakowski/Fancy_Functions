@@ -13,6 +13,9 @@ class FancyFunction(BaseModel):
     input_contract: Dict[str, str] = {}
     output_contract: Dict[str, str] = {}
     
+    # Operation Type (Map, Reduce, etc)
+    operation_type: str = None
+
     # The actual code
     _executable: Callable = PrivateAttr()
     
